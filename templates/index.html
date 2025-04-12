@@ -62,6 +62,19 @@
             border-radius: 8px;
             margin-top: 15px;
         }
+        .key-row {
+            display: flex;
+            gap: 10px;
+        }
+        .key-row input {
+            flex: 1;
+        }
+        .key-row form {
+            margin: 0;
+        }
+        .key-row button {
+            width: 150px;
+        }
     </style>
 </head>
 <body>
@@ -72,7 +85,12 @@
             <textarea name="plaintext" rows="5" placeholder="Enter text here...">{{ plaintext }}</textarea>
 
             <label for="keymap">Cipher Key:</label>
-            <input type="text" name="keymap" id="keymap" value="{{ keymap }}">
+            <div class="key-row">
+                <input type="text" name="keymap" id="keymap" value="{{ keymap }}">
+                <form action="/generate-key" method="get">
+                    <button type="submit">Generate Key</button>
+                </form>
+            </div>
 
             <button type="submit">Encrypt</button>
         </form>
