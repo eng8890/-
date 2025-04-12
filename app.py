@@ -27,17 +27,16 @@ def encrypt(text, keymap):
             result += char
     return result
 
-@app.route('/', methods=['GET', 'POST'])
+@app.route('/')
 def index():
-    keymap = generate_keymap()
-    encrypted = ''
-    plaintext = ''
+    keymap = request.args.get('keymap') or generate_keymap()
+    return render_template('index.html', encrypted='', plaintext='', keymap=keymap)
 
-    if request.method == 'POST':
-        plaintext = request.form['plaintext']
-        keymap = request.form['keymap']
-        encrypted = encrypt(plaintext, keymap)
-
+@app.route('/', methods=['POST'])
+def encrypt_text():
+    plaintext = request.form['plaintext']
+    keymap = request.form['keymap']
+    encrypted = encrypt(plaintext, keymap)
     return render_template('index.html', encrypted=encrypted, plaintext=plaintext, keymap=keymap)
 
 @app.route('/generate-key')
