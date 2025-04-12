@@ -1,94 +1,97 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="ar">
 <head>
     <meta charset="UTF-8">
-    <title>Monoalphabetic Cipher</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>التشفير Monoalphabetic</title>
     <style>
         body {
-            background-color: #121212;
-            color: #ffffff;
             font-family: Arial, sans-serif;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            min-height: 100vh;
+            margin: 20px;
+            direction: rtl;
         }
         .container {
-            background-color: #1e1e1e;
-            padding: 30px;
-            border-radius: 12px;
-            box-shadow: 0 0 20px rgba(0,0,0,0.7);
-            width: 600px;
+            max-width: 600px;
+            margin: auto;
         }
-        textarea, input {
+        textarea, input, button {
             width: 100%;
-            margin-bottom: 15px;
-            padding: 12px;
-            font-size: 16px;
-            background-color: #2c2c2c;
-            color: #ffffff;
-            border: none;
-            border-radius: 8px;
+            padding: 10px;
+            margin: 10px 0;
+            box-sizing: border-box;
         }
         button {
-            background-color: #03dac6;
-            color: #000000;
-            font-weight: bold;
-            padding: 10px 18px;
+            background-color: #4CAF50;
+            color: white;
             border: none;
-            border-radius: 8px;
             cursor: pointer;
         }
         button:hover {
-            background-color: #00bfa5;
+            background-color: #45a049;
         }
-        label {
-            font-weight: bold;
-            margin-bottom: 5px;
-            display: block;
-        }
-        .output {
-            background-color: #2a2a2a;
-            padding: 15px;
-            border-radius: 8px;
-            margin-top: 20px;
-            word-wrap: break-word;
-        }
-        .key-row {
-            display: flex;
-            gap: 10px;
-            align-items: center;
-        }
-        .key-row input {
-            flex: 1;
+        .result {
+            background-color: #f9f9f9;
+            padding: 10px;
+            border: 1px solid #ddd;
         }
     </style>
 </head>
 <body>
     <div class="container">
-        <h2 style="text-align: center; color: #03dac6;">Monoalphabetic Cipher</h2>
+        <h1>التشفير Monoalphabetic</h1>
 
-        <form method="POST">
-            <label for="plaintext">Plain Text</label>
-            <textarea name="plaintext" rows="5" placeholder="Enter your text here">{{ plaintext }}</textarea>
+        <label for="inputText">النص الأصلي:</label>
+        <textarea id="inputText" placeholder="أدخل النص هنا..."></textarea>
 
-            <label for="keymap">Cipher Key</label>
-            <div class="key-row">
-                <input type="text" name="keymap" id="keymap" value="{{ keymap }}">
-                <form action="/generate-key" method="GET">
-                    <button type="submit">Generate</button>
-                </form>
-            </div>
+        <button id="generateKeyBtn">توليد مفتاح تلقائي</button>
 
-            <button type="submit" style="margin-top: 10px;">Encrypt</button>
-        </form>
+        <label for="keyDisplay">مفتاح التشفير:</label>
+        <input type="text" id="keyDisplay" readonly placeholder="سيتم عرض المفتاح هنا..." />
 
-        {% if encrypted %}
-            <div class="output">
-                <label>Encrypted Text</label>
-                <p>{{ encrypted }}</p>
-            </div>
-        {% endif %}
+        <button id="encryptBtn">تشفير النص</button>
+
+        <div class="result">
+            <h3>النص المشفر:</h3>
+            <pre id="encryptedText"></pre>
+        </div>
     </div>
+
+    <script>
+        const generateKeyBtn = document.getElementById('generateKeyBtn');
+        const encryptBtn = document.getElementById('encryptBtn');
+        const inputText = document.getElementById('inputText');
+        const keyDisplay = document.getElementById('keyDisplay');
+        const encryptedText = document.getElementById('encryptedText');
+
+        // توليد مفتاح تلقائي
+        generateKeyBtn.addEventListener('click', () => {
+            fetch('/', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ action: 'generate_key' })
+            })
+            .then(response => response.json())
+            .then(data => {
+                const key = data.key;
+                keyDisplay.value = JSON.stringify(key);
+            });
+        });
+
+        // تشفير النص
+        encryptBtn.addEventListener('click', () => {
+            const text = inputText.value;
+            const key = JSON.parse(keyDisplay.value);
+
+            fetch('/', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ action: 'encrypt', text, key })
+            })
+            .then(response => response.json())
+            .then(data => {
+                encryptedText.textContent = data.encrypted_text;
+            });
+        });
+    </script>
 </body>
 </html>
