@@ -29,13 +29,11 @@ def index():
 
         if action == "generate_key":
             key = generate_key()
-            # إرسال المفتاح كسلسلة نصية بدلاً من JSON
-            key_str = ", ".join([f"{k}: {v}" for k, v in key.items()])
-            return jsonify({"key": key_str, "key_dict": key})
+            return jsonify({"key": key})
 
         elif action == "encrypt":
             text = data.get("text")
-            key = data.get("key")  # يجب أن يكون المفتاح هنا قاموسًا
+            key = data.get("key")
             encrypted_text = encrypt_text(text, key)
             return jsonify({"encrypted_text": encrypted_text})
 
