@@ -34,9 +34,6 @@
             padding: 10px;
             border: 1px solid #ddd;
         }
-        .error {
-            color: red;
-        }
     </style>
 </head>
 <body>
@@ -57,8 +54,6 @@
             <h3>النص المشفر:</h3>
             <pre id="encryptedText"></pre>
         </div>
-
-        <p class="error" id="errorMessage"></p>
     </div>
 
     <script>
@@ -67,7 +62,6 @@
         const inputText = document.getElementById('inputText');
         const keyDisplay = document.getElementById('keyDisplay');
         const encryptedText = document.getElementById('encryptedText');
-        const errorMessage = document.getElementById('errorMessage');
 
         let currentKey = null; // لتخزين المفتاح الحالي
 
@@ -80,12 +74,11 @@
             })
             .then(response => response.json())
             .then(data => {
-                keyDisplay.value = data.key; // عرض المفتاح كنص
-                currentKey = data.key_dict; // تخزين المفتاح كقاموس
-                errorMessage.textContent = ""; // مسح أي رسائل خطأ
+                currentKey = data.key; // تخزين المفتاح كقاموس
+                keyDisplay.value = JSON.stringify(currentKey, null, 2); // عرض المفتاح بشكل مرتب
             })
             .catch(error => {
-                errorMessage.textContent = "حدث خطأ أثناء توليد المفتاح.";
+                alert("حدث خطأ أثناء توليد المفتاح.");
             });
         });
 
@@ -94,7 +87,7 @@
             const text = inputText.value;
 
             if (!currentKey) {
-                errorMessage.textContent = "يجب توليد مفتاح أولاً!";
+                alert("يجب توليد مفتاح أولاً!");
                 return;
             }
 
@@ -105,11 +98,10 @@
             })
             .then(response => response.json())
             .then(data => {
-                encryptedText.textContent = data.encrypted_text;
-                errorMessage.textContent = ""; // مسح أي رسائل خطأ
+                encryptedText.textContent = data.encrypted_text; // عرض النص المشفر
             })
             .catch(error => {
-                errorMessage.textContent = "حدث خطأ أثناء التشفير.";
+                alert("حدث خطأ أثناء التشفير.");
             });
         });
     </script>
