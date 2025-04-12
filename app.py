@@ -6,14 +6,6 @@ import string
 app = Flask(__name__)
 app.config['SECRET_KEY'] = 'secret123'
 
-# دالة توليد مفتاح تشفير عشوائي
-def generate_random_key():
-    letters = list(string.ascii_lowercase)
-    shuffled = letters[:]
-    random.shuffle(shuffled)
-    return dict(zip(letters, shuffled))
-
-# تحويل سلسلة مفتاح (string) إلى dict
 def parse_key_string(key_str):
     key_map = {}
     pairs = key_str.lower().split(',')
@@ -23,7 +15,6 @@ def parse_key_string(key_str):
             key_map[k.strip()] = v.strip()
     return key_map
 
-# دالة التشفير
 def mono_encrypt(text, key_map):
     result = ""
     for char in text:
@@ -39,21 +30,19 @@ def mono_encrypt(text, key_map):
 @app.route('/', methods=['GET', 'POST'])
 def index():
     encrypted_text = ""
-    user_key_str = ""
+    keymap = ""
     plaintext = ""
-    generated_key = generate_random_key()
-    default_key_str = ', '.join([f"{k}:{v}" for k, v in generated_key.items()])
 
     if request.method == 'POST':
         plaintext = request.form.get('plaintext', '')
-        user_key_str = request.form.get('keymap', default_key_str)
+        keymap = request.form.get('keymap', '')
         try:
-            key_map = parse_key_string(user_key_str)
-            encrypted_text = mono_encrypt(plaintext, key_map)
+            key_dict = parse_key_string(keymap)
+            encrypted_text = mono_encrypt(plaintext, key_dict)
         except Exception as e:
-            encrypted_text = f"Error in key format: {e}"
-    
-    return render_template('index.html', encrypted=encrypted_text, keymap=user_key_str, plaintext=plaintext)
+            encrypted_text = f"⚠️ خطأ في مفتاح التشفير: {e}"
+
+    return render_template('index.html', encrypted=encrypted_text, keymap=keymap, plaintext=plaintext)
 
 if __name__ == '__main__':
     port = int(os.environ.get("PORT", 10000))
