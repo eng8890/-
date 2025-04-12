@@ -1,34 +1,39 @@
-# app.py
 from flask import Flask, render_template, request
+import os
 
 app = Flask(__name__)
 
-# مفتاح التشفير (تبديل الحروف الأبجدية)
-key = {
-    'a': 'Q', 'b': 'W', 'c': 'E', 'd': 'R', 'e': 'T',
-    'f': 'Y', 'g': 'U', 'h': 'I', 'i': 'O', 'j': 'P',
-    'k': 'A', 'l': 'S', 'm': 'D', 'n': 'F', 'o': 'G',
-    'p': 'H', 'q': 'J', 'r': 'K', 's': 'L', 't': 'Z',
-    'u': 'X', 'v': 'C', 'w': 'V', 'x': 'B', 'y': 'N',
-    'z': 'M'
+# دالة تشفير monoalphabetic
+def mono_encrypt(text, key_map):
+    result = ""
+    for char in text:
+        if char.isalpha():
+            if char.islower():
+                result += key_map.get(char, char)
+            else:
+                result += key_map.get(char.lower(), char).upper()
+        else:
+            result += char
+    return result
+
+# خارطة التشفير: كل حرف مقابل له حرف آخر (تقدر تغيرها)
+default_key = {
+    'a': 'm', 'b': 'n', 'c': 'b', 'd': 'v', 'e': 'c',
+    'f': 'x', 'g': 'z', 'h': 'l', 'i': 'k', 'j': 'j',
+    'k': 'h', 'l': 'g', 'm': 'f', 'n': 'd', 'o': 's',
+    'p': 'a', 'q': 'p', 'r': 'o', 's': 'i', 't': 'u',
+    'u': 'y', 'v': 't', 'w': 'r', 'x': 'e', 'y': 'w',
+    'z': 'q'
 }
 
-def monoalphabetic_encrypt(text):
-    encrypted = ''
-    for char in text.lower():
-        if char in key:
-            encrypted += key[char]
-        else:
-            encrypted += char
-    return encrypted
-
 @app.route('/', methods=['GET', 'POST'])
-def home():
-    result = ''
+def index():
+    encrypted_text = ""
     if request.method == 'POST':
-        plaintext = request.form['text']
-        result = monoalphabetic_encrypt(plaintext)
-    return render_template('index.html', result=result)
+        text = request.form['plaintext']
+        encrypted_text = mono_encrypt(text, default_key)
+    return render_template('index.html', encrypted=encrypted_text)
 
 if __name__ == '__main__':
-    app.run(debug=True)
+    port = int(os.environ.get("PORT", 10000))
+    app.run(host='0.0.0.0', port=port)
