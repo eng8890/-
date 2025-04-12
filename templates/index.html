@@ -1,8 +1,8 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="ar" dir="rtl">
 <head>
     <meta charset="UTF-8">
-    <title>Monoalphabetic Cipher</title>
+    <title>تشفير Monoalphabetic</title>
     <style>
         body {
             background-color: #121212;
@@ -37,6 +37,10 @@
             background-color: #2a2a2a;
             color: #ffffff;
         }
+        .btns {
+            display: flex;
+            gap: 10px;
+        }
         button {
             background-color: #03dac6;
             color: #000000;
@@ -63,18 +67,29 @@
             margin-top: 15px;
         }
     </style>
+    <script>
+        function generateKey() {
+            const letters = "abcdefghijklmnopqrstuvwxyz".split('');
+            const shuffled = [...letters].sort(() => Math.random() - 0.5);
+            const keyPairs = letters.map((l, i) => `${l}:${shuffled[i]}`);
+            document.getElementById('keymap').value = keyPairs.join(', ');
+        }
+    </script>
 </head>
 <body>
     <div class="container">
-        <h1>Monoalphabetic Cipher</h1>
+        <h1>تشفير Monoalphabetic</h1>
         <form method="POST">
             <label for="plaintext">📝 النص الأصلي:</label>
             <textarea name="plaintext" rows="5" placeholder="اكتب النص هنا...">{{ plaintext }}</textarea>
 
-            <label for="keymap">🔐 مفتاح التشفير (يمكن تعديله):</label>
-            <input type="text" name="keymap" value="{{ keymap }}">
+            <label for="keymap">🔐 مفتاح التشفير:</label>
+            <input type="text" name="keymap" id="keymap" value="{{ keymap }}">
 
-            <button type="submit">🔒 تشفير</button>
+            <div class="btns">
+                <button type="submit">🔒 تشفير</button>
+                <button type="button" onclick="generateKey()">🎲 توليد مفتاح</button>
+            </div>
         </form>
 
         {% if encrypted %}
