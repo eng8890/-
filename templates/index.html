@@ -1,8 +1,8 @@
 <!DOCTYPE html>
-<html lang="ar" dir="rtl">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>تشفير Monoalphabetic</title>
+    <title>Monoalphabetic Cipher</title>
     <style>
         body {
             background-color: #121212;
@@ -37,10 +37,6 @@
             background-color: #2a2a2a;
             color: #ffffff;
         }
-        .btns {
-            display: flex;
-            gap: 10px;
-        }
         button {
             background-color: #03dac6;
             color: #000000;
@@ -67,34 +63,23 @@
             margin-top: 15px;
         }
     </style>
-    <script>
-        function generateKey() {
-            const letters = "abcdefghijklmnopqrstuvwxyz".split('');
-            const shuffled = [...letters].sort(() => Math.random() - 0.5);
-            const keyPairs = letters.map((l, i) => `${l}:${shuffled[i]}`);
-            document.getElementById('keymap').value = keyPairs.join(', ');
-        }
-    </script>
 </head>
 <body>
     <div class="container">
-        <h1>تشفير Monoalphabetic</h1>
+        <h1>Monoalphabetic Cipher</h1>
         <form method="POST">
-            <label for="plaintext">📝 النص الأصلي:</label>
-            <textarea name="plaintext" rows="5" placeholder="اكتب النص هنا...">{{ plaintext }}</textarea>
+            <label for="plaintext">Plain Text:</label>
+            <textarea name="plaintext" rows="5" placeholder="Enter text here...">{{ plaintext }}</textarea>
 
-            <label for="keymap">🔐 مفتاح التشفير:</label>
+            <label for="keymap">Cipher Key:</label>
             <input type="text" name="keymap" id="keymap" value="{{ keymap }}">
 
-            <div class="btns">
-                <button type="submit">🔒 تشفير</button>
-                <button type="button" onclick="generateKey()">🎲 توليد مفتاح</button>
-            </div>
+            <button type="submit">Encrypt</button>
         </form>
 
         {% if encrypted %}
             <div class="output">
-                <label>🔓 النص المشفر:</label>
+                <label>Encrypted Text:</label>
                 <p>{{ encrypted }}</p>
             </div>
         {% endif %}
