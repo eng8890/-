@@ -2,8 +2,9 @@ from flask import Flask, render_template, request
 import os
 
 app = Flask(__name__)
+app.config['SECRET_KEY'] = 'anysecretkey'  # مو ضروري بس يفيد أحياناً
 
-# دالة تشفير monoalphabetic
+# دالة التشفير monoalphabetic
 def mono_encrypt(text, key_map):
     result = ""
     for char in text:
@@ -16,7 +17,7 @@ def mono_encrypt(text, key_map):
             result += char
     return result
 
-# خارطة التشفير: كل حرف مقابل له حرف آخر (تقدر تغيرها)
+# خريطة التشفير
 default_key = {
     'a': 'm', 'b': 'n', 'c': 'b', 'd': 'v', 'e': 'c',
     'f': 'x', 'g': 'z', 'h': 'l', 'i': 'k', 'j': 'j',
@@ -30,7 +31,7 @@ default_key = {
 def index():
     encrypted_text = ""
     if request.method == 'POST':
-        text = request.form['plaintext']
+        text = request.form.get('plaintext', '')
         encrypted_text = mono_encrypt(text, default_key)
     return render_template('index.html', encrypted=encrypted_text)
 
