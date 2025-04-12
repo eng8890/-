@@ -1,65 +1,49 @@
-from flask import Flask, render_template, request
+from flask import Flask, render_template, request, redirect, url_for
 import random
 import string
-import os
 
 app = Flask(__name__)
 
-def generate_key():
+def generate_keymap():
     letters = list(string.ascii_lowercase)
     shuffled = letters[:]
     random.shuffle(shuffled)
-    return dict(zip(letters, shuffled))
+    return ', '.join(f"{a}:{b}" for a, b in zip(letters, shuffled))
 
-def key_to_string(key_dict):
-    return ', '.join([f"{k}:{v}" for k, v in key_dict.items()])
-
-def parse_key_string(key_str):
-    key_map = {}
-    pairs = key_str.lower().split(',')
-    for pair in pairs:
+def encrypt(text, keymap):
+    mapping = {}
+    for pair in keymap.split(','):
         if ':' in pair:
-            k, v = pair.split(':')
-            key_map[k.strip()] = v.strip()
-    return key_map
+            k, v = pair.strip().split(':')
+            mapping[k.strip()] = v.strip()
 
-def mono_encrypt(text, key_map):
     result = ""
     for char in text:
-        if char.isalpha():
-            if char.islower():
-                result += key_map.get(char, char)
-            else:
-                result += key_map.get(char.lower(), char).upper()
+        lower_char = char.lower()
+        if lower_char in mapping:
+            enc_char = mapping[lower_char]
+            result += enc_char.upper() if char.isupper() else enc_char
         else:
             result += char
     return result
 
 @app.route('/', methods=['GET', 'POST'])
 def index():
-    encrypted_text = ""
-    plaintext = ""
-    keymap = ""
+    keymap = generate_keymap()
+    encrypted = ''
+    plaintext = ''
+
     if request.method == 'POST':
-        plaintext = request.form.get('plaintext', '')
-        keymap = request.form.get('keymap', '')
-        try:
-            key_dict = parse_key_string(keymap)
-            encrypted_text = mono_encrypt(plaintext, key_dict)
-        except:
-            encrypted_text = "Error in key format"
-    else:
-        key_dict = generate_key()
-        keymap = key_to_string(key_dict)
+        plaintext = request.form['plaintext']
+        keymap = request.form['keymap']
+        encrypted = encrypt(plaintext, keymap)
 
-    return render_template('index.html', encrypted=encrypted_text, keymap=keymap, plaintext=plaintext)
+    return render_template('index.html', encrypted=encrypted, plaintext=plaintext, keymap=keymap)
 
-@app.route('/generate-key', methods=['GET'])
-def generate_key_route():
-    key_dict = generate_key()
-    keymap = key_to_string(key_dict)
-    return render_template('index.html', encrypted="", keymap=keymap, plaintext="")
+@app.route('/generate-key')
+def generate_key():
+    keymap = generate_keymap()
+    return redirect(url_for('index', keymap=keymap))
 
 if __name__ == '__main__':
-    port = int(os.environ.get("PORT", 10000))
-    app.run(host='0.0.0.0', port=port)
+    app.run(debug=True)
