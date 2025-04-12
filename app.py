@@ -1,65 +1,43 @@
-from flask import Flask, render_template, request
+from flask import Flask, render_template, request, jsonify
 import random
 import string
-import os
 
 app = Flask(__name__)
 
+# دالة لتوليد مفتاح تشفير عشوائي
 def generate_key():
-    letters = list(string.ascii_lowercase)
-    shuffled = letters[:]
-    random.shuffle(shuffled)
-    return dict(zip(letters, shuffled))
+    alphabet = list(string.ascii_lowercase)
+    shuffled_alphabet = alphabet[:]
+    random.shuffle(shuffled_alphabet)
+    return dict(zip(alphabet, shuffled_alphabet))
 
-def key_to_string(key_dict):
-    return ', '.join([f"{k}:{v}" for k, v in key_dict.items()])
-
-def parse_key_string(key_str):
-    key_map = {}
-    pairs = key_str.lower().split(',')
-    for pair in pairs:
-        if ':' in pair:
-            k, v = pair.split(':')
-            key_map[k.strip()] = v.strip()
-    return key_map
-
-def mono_encrypt(text, key_map):
-    result = ""
-    for char in text:
-        if char.isalpha():
-            if char.islower():
-                result += key_map.get(char, char)
-            else:
-                result += key_map.get(char.lower(), char).upper()
-        else:
-            result += char
-    return result
-
-@app.route('/', methods=['GET', 'POST'])
-def index():
+# دالة للتشفير باستخدام المفتاح
+def encrypt_text(text, key):
     encrypted_text = ""
-    plaintext = ""
-    keymap = ""
-    if request.method == 'POST':
-        plaintext = request.form.get('plaintext', '')
-        keymap = request.form.get('keymap', '')
-        try:
-            key_dict = parse_key_string(keymap)
-            encrypted_text = mono_encrypt(plaintext, key_dict)
-        except:
-            encrypted_text = "Error in key format"
-    else:
-        key_dict = generate_key()
-        keymap = key_to_string(key_dict)
+    for char in text.lower():
+        if char in key:
+            encrypted_text += key[char]
+        else:
+            encrypted_text += char  # الحفاظ على الأحرف غير الأبجدية كما هي
+    return encrypted_text
 
-    return render_template('index.html', encrypted=encrypted_text, keymap=keymap, plaintext=plaintext)
+@app.route("/", methods=["GET", "POST"])
+def index():
+    if request.method == "POST":
+        data = request.json
+        action = data.get("action")
 
-@app.route('/generate-key', methods=['GET'])
-def generate_key_route():
-    key_dict = generate_key()
-    keymap = key_to_string(key_dict)
-    return render_template('index.html', encrypted="", keymap=keymap, plaintext="")
+        if action == "generate_key":
+            key = generate_key()
+            return jsonify({"key": key})
 
-if __name__ == '__main__':
-    port = int(os.environ.get("PORT", 10000))
-    app.run(host='0.0.0.0', port=port)
+        elif action == "encrypt":
+            text = data.get("text")
+            key = data.get("key")
+            encrypted_text = encrypt_text(text, key)
+            return jsonify({"encrypted_text": encrypted_text})
+
+    return render_template("index.html")
+
+if __name__ == "__main__":
+    app.run(debug=True)
