@@ -34,6 +34,9 @@
             padding: 10px;
             border: 1px solid #ddd;
         }
+        .error {
+            color: red;
+        }
     </style>
 </head>
 <body>
@@ -46,7 +49,7 @@
         <button id="generateKeyBtn">توليد مفتاح تلقائي</button>
 
         <label for="keyDisplay">مفتاح التشفير:</label>
-        <input type="text" id="keyDisplay" readonly placeholder="سيتم عرض المفتاح هنا..." />
+        <textarea id="keyDisplay" readonly placeholder="سيتم عرض المفتاح هنا..." rows="5"></textarea>
 
         <button id="encryptBtn">تشفير النص</button>
 
@@ -54,6 +57,8 @@
             <h3>النص المشفر:</h3>
             <pre id="encryptedText"></pre>
         </div>
+
+        <p class="error" id="errorMessage"></p>
     </div>
 
     <script>
@@ -62,6 +67,9 @@
         const inputText = document.getElementById('inputText');
         const keyDisplay = document.getElementById('keyDisplay');
         const encryptedText = document.getElementById('encryptedText');
+        const errorMessage = document.getElementById('errorMessage');
+
+        let currentKey = null; // لتخزين المفتاح الحالي
 
         // توليد مفتاح تلقائي
         generateKeyBtn.addEventListener('click', () => {
@@ -72,24 +80,36 @@
             })
             .then(response => response.json())
             .then(data => {
-                const key = data.key;
-                keyDisplay.value = JSON.stringify(key);
+                keyDisplay.value = data.key; // عرض المفتاح كنص
+                currentKey = data.key_dict; // تخزين المفتاح كقاموس
+                errorMessage.textContent = ""; // مسح أي رسائل خطأ
+            })
+            .catch(error => {
+                errorMessage.textContent = "حدث خطأ أثناء توليد المفتاح.";
             });
         });
 
         // تشفير النص
         encryptBtn.addEventListener('click', () => {
             const text = inputText.value;
-            const key = JSON.parse(keyDisplay.value);
+
+            if (!currentKey) {
+                errorMessage.textContent = "يجب توليد مفتاح أولاً!";
+                return;
+            }
 
             fetch('/', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ action: 'encrypt', text, key })
+                body: JSON.stringify({ action: 'encrypt', text, key: currentKey })
             })
             .then(response => response.json())
             .then(data => {
                 encryptedText.textContent = data.encrypted_text;
+                errorMessage.textContent = ""; // مسح أي رسائل خطأ
+            })
+            .catch(error => {
+                errorMessage.textContent = "حدث خطأ أثناء التشفير.";
             });
         });
     </script>
