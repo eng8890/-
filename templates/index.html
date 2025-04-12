@@ -1,8 +1,8 @@
 <!DOCTYPE html>
-<html lang="ar" dir="rtl">
+<html lang="en" dir="ltr">
 <head>
     <meta charset="UTF-8">
-    <title>تشفير Monoalphabetic</title>
+    <title>Monoalphabetic</title>
     <style>
         body {
             background-color: #121212;
@@ -78,23 +78,23 @@
 </head>
 <body>
     <div class="container">
-        <h1>تشفير Monoalphabetic</h1>
+        <h1>Monoalphabetic Encryption</h1>
         <form method="POST">
-            <label for="plaintext">📝 النص الأصلي:</label>
-            <textarea name="plaintext" rows="5" placeholder="اكتب النص هنا...">{{ plaintext }}</textarea>
+            <label for="plaintext">📝 Plain Text:</label>
+            <textarea name="plaintext" rows="5" placeholder="Enter your text here...">{{ plaintext }}</textarea>
 
-            <label for="keymap">🔐 مفتاح التشفير:</label>
+            <label for="keymap">🔐 Encryption Key:</label>
             <input type="text" name="keymap" id="keymap" value="{{ keymap }}">
 
             <div class="btns">
-                <button type="submit">🔒 تشفير</button>
-                <button type="button" onclick="generateKey()">🎲 توليد مفتاح</button>
+                <button type="submit">🔒 Encrypt</button>
+                <button type="button" onclick="generateKey()">🎲 Generate Key</button>
             </div>
         </form>
 
         {% if encrypted %}
             <div class="output">
-                <label>🔓 النص المشفر:</label>
+                <label>🔓 Encrypted Text:</label>
                 <p>{{ encrypted }}</p>
             </div>
         {% endif %}
