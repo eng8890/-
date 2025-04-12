@@ -37,13 +37,19 @@
             background-color: #2a2a2a;
             color: #ffffff;
         }
-        button {
+        button, a.button-link {
             background-color: #03dac6;
             color: #000000;
             font-weight: bold;
             cursor: pointer;
+            text-align: center;
+            text-decoration: none;
+            display: inline-block;
+            padding: 12px;
+            border-radius: 8px;
+            width: 150px;
         }
-        button:hover {
+        button:hover, a.button-link:hover {
             background-color: #00bfa5;
         }
         h1 {
@@ -65,32 +71,27 @@
         .key-row {
             display: flex;
             gap: 10px;
+            align-items: center;
         }
         .key-row input {
             flex: 1;
-        }
-        .key-row form {
-            margin: 0;
-        }
-        .key-row button {
-            width: 150px;
         }
     </style>
 </head>
 <body>
     <div class="container">
         <h1>Monoalphabetic Cipher</h1>
+
+        <div class="key-row">
+            <label for="keymap" style="flex: 1;">Cipher Key:</label>
+            <a href="/generate-key" class="button-link">Generate Key</a>
+        </div>
+
         <form method="POST">
+            <input type="text" name="keymap" id="keymap" value="{{ keymap }}" placeholder="a:b, c:d, ...">
+
             <label for="plaintext">Plain Text:</label>
             <textarea name="plaintext" rows="5" placeholder="Enter text here...">{{ plaintext }}</textarea>
-
-            <label for="keymap">Cipher Key:</label>
-            <div class="key-row">
-                <input type="text" name="keymap" id="keymap" value="{{ keymap }}">
-                <form action="/generate-key" method="get">
-                    <button type="submit">Generate Key</button>
-                </form>
-            </div>
 
             <button type="submit">Encrypt</button>
         </form>
