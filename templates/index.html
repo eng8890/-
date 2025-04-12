@@ -3,17 +3,86 @@
 <head>
     <meta charset="UTF-8">
     <title>Monoalphabetic Cipher</title>
+    <style>
+        body {
+            background-color: #121212;
+            color: #ffffff;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+        }
+        .container {
+            background-color: #1e1e1e;
+            padding: 30px;
+            border-radius: 15px;
+            box-shadow: 0 0 20px rgba(0,0,0,0.7);
+            width: 600px;
+        }
+        textarea, input, button {
+            width: 100%;
+            margin: 10px 0;
+            padding: 12px;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+        }
+        textarea {
+            resize: vertical;
+            background-color: #2a2a2a;
+            color: #ffffff;
+        }
+        input {
+            background-color: #2a2a2a;
+            color: #ffffff;
+        }
+        button {
+            background-color: #03dac6;
+            color: #000000;
+            font-weight: bold;
+            cursor: pointer;
+        }
+        button:hover {
+            background-color: #00bfa5;
+        }
+        h1 {
+            text-align: center;
+            color: #03dac6;
+        }
+        label {
+            font-weight: bold;
+            display: block;
+            margin-top: 15px;
+            margin-bottom: 5px;
+        }
+        .output {
+            background-color: #2a2a2a;
+            padding: 10px;
+            border-radius: 8px;
+            margin-top: 15px;
+        }
+    </style>
 </head>
 <body>
-    <h1>Monoalphabetic Cipher</h1>
-    <form method="POST">
-        <textarea name="plaintext" rows="6" cols="60" placeholder="Enter your text here..."></textarea><br><br>
-        <button type="submit">Encrypt</button>
-    </form>
+    <div class="container">
+        <h1>Monoalphabetic Cipher</h1>
+        <form method="POST">
+            <label for="plaintext">📝 النص الأصلي:</label>
+            <textarea name="plaintext" rows="5" placeholder="اكتب النص هنا...">{{ plaintext }}</textarea>
 
-    {% if encrypted %}
-        <h2>Encrypted Text:</h2>
-        <p>{{ encrypted }}</p>
-    {% endif %}
+            <label for="keymap">🔐 مفتاح التشفير (يمكن تعديله):</label>
+            <input type="text" name="keymap" value="{{ keymap }}">
+
+            <button type="submit">🔒 تشفير</button>
+        </form>
+
+        {% if encrypted %}
+            <div class="output">
+                <label>🔓 النص المشفر:</label>
+                <p>{{ encrypted }}</p>
+            </div>
+        {% endif %}
+    </div>
 </body>
 </html>
